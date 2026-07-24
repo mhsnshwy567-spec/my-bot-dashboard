@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGM BOT CONTROL - لوحة تحكم البوت الاحترافية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0b0f19;
+            --bg-card: rgba(22, 29, 47, 0.7);
+            --border-glow: rgba(99, 102, 241, 0.3);
+            --accent-purple: #6366f1;
+            --accent-cyan: #06b6d4;
+            --accent-pink: #ec4899;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
+        body { background: var(--bg-primary); color: var(--text-main); min-height: 100vh; padding: 15px; background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 40%); }
+
+        .header { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border-glow); padding: 15px 20px; border-radius: 16px; margin-bottom: 20px; }
+        .logo-title { display: flex; align-items: center; gap: 12px; }
+        .logo-title i { font-size: 28px; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .brand-badge { background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink)); color: white; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+
+        .vault-btn { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; padding: 8px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .vault-btn:hover { background: rgba(239, 68, 68, 0.4); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+
+        .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        @media(min-width: 900px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } .full-width { grid-column: span 2; } }
+
+        .card { background: var(--bg-card); border: 1px solid var(--border-glow); backdrop-filter: blur(10px); padding: 18px; border-radius: 16px; }
+        .card-title { font-size: 16px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; color: var(--accent-cyan); }
+
+        input, textarea, select { width: 100%; background: rgba(11, 15, 25, 0.8); border: 1px solid var(--border-glow); border-radius: 10px; padding: 10px 14px; color: white; margin-bottom: 10px; font-size: 13px; outline: none; }
+        textarea { font-family: 'JetBrains Mono', monospace; height: 160px; resize: vertical; }
+
+        .btn-action { background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan)); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.3s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4); }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 999; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: #111827; border: 1px solid var(--accent-pink); border-radius: 18px; width: 100%; max-width: 450px; padding: 20px; }
+
+        .footer { text-align: center; margin-top: 25px; color: var(--text-muted); font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo-title">
+            <i class="fa-solid fa-microchip"></i>
+            <div>
+                <h2>NGM Dashboard <span class="brand-badge">DEV NGM</span></h2>
+            </div>
+        </div>
+        <button class="vault-btn" onclick="openVaultModal()"><i class="fa-solid fa-key"></i> المنطقة السرية</button>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <div class="card-title"><i class="fa-solid fa-terminal"></i> محرر الكود وتطوير البوت</div>
+            <textarea id="scriptEditor" placeholder="// ضع كود البوت هنا..."></textarea>
+            <input type="text" id="errorLog" placeholder="ضع الخطأ (Error Log) لتصحيحه...">
+            <button class="btn-action" onclick="sendToAI()"><i class="fa-solid fa-wand-magic-sparkles"></i> تعديل واختبار بالذكاء الاصطناعي</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><i class="fa-solid fa-paper-plane"></i> تنفيذ أمر سري مباشر</div>
+            <input type="text" id="commandInput" placeholder="اكتب الأمر (مثال: !ban @user, !clear 50)...">
+            <button class="btn-action" onclick="sendCommand()"><i class="fa-solid fa-bolt"></i> إرسال الأمر فوراً</button>
+        </div>
+    </div>
+
+    <div id="vaultModal" class="modal">
+        <div class="modal-content">
+            <div class="card-title" style="color: var(--accent-pink);"><i class="fa-solid fa-user-shield"></i> خزنة التوكن السرية</div>
+            <input type="password" id="vaultPin" placeholder="أدخل رمز PIN للدخول (الافتراضي: 1234)">
+            <button class="btn-action" onclick="unlockVault()" style="margin-bottom:15px;">دخول الخزنة</button>
+            
+            <div id="vaultFields" style="display:none;">
+                <hr style="border-color: rgba(255,255,255,0.1); margin-bottom: 15px;">
+                <input type="text" id="botNameSecret" placeholder="اسم البوت">
+                <input type="password" id="botTokenSecret" placeholder="توكن البوت السري (Bot Token)">
+                <button class="btn-action" onclick="saveSecretData()">حفظ البيانات بأمان</button>
+            </div>
+            <button onclick="closeVaultModal()" style="background:transparent; border:none; color:var(--text-muted); width:100%; margin-top:10px; cursor:pointer;">إغلاق</button>
+        </div>
+    </div>
+
+    <div class="footer">المبرمج وتطوير: NGM | جميع الحقوق محفوظة © 2026</div>
+
+<script>
+    function openVaultModal() { document.getElementById("vaultModal").style.display = "flex"; }
+    function closeVaultModal() { document.getElementById("vaultModal").style.display = "none"; }
+    
+    function unlockVault() {
+        if(document.getElementById("vaultPin").value === "1234") {
+            document.getElementById("vaultFields").style.display = "block";
+        } else { alert("رمز PIN خاطئ!"); }
+    }
+
+    function saveSecretData() {
+        alert("تم حفظ بيانات التوكن بأمان!");
+        closeVaultModal();
+    }
+
+    function sendToAI() {
+        let prompt = "تعديل واحترافية الكود";
+        let script = document.getElementById("scriptEditor").value;
+        let error = document.getElementById("errorLog").value;
+
+        fetch("/api/ai_fix", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({prompt: prompt, script: script, error_log: error})
+        }).then(r => r.json()).then(data => {
+            if(data.status === "success") {
+                document.getElementById("scriptEditor").value = data.ai_response;
+                alert("تم تعديل الكود بنجاح بواسطة الذكاء الاصطناعي!");
+            } else { alert("خطأ: " + data.message); }
+        });
+    }
+
+    function sendCommand() {
+        let cmd = document.getElementById("commandInput").value;
+        if(!cmd) return alert("اكتب أمراً أولاً!");
+        alert("تم إرسال الأمر للبوت: " + cmd);
+    }
+</script>
+</body>
+</html>
